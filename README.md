@@ -28,6 +28,6 @@ The mechamism uses two third party libraries:
 
 * [log4cpp](http://log4cpp.sourceforge.net/) - Used for file logging.
 * [boost](http://www.boost.org/) - Used for high precision timestamp
-{package [date\_time](www.boost.org/libs/date_time/)} and sleep
-{package [thread](www.boost.org/libs/thread/)}.
+{package [date\_time](http://www.boost.org/libs/date_time/)} and sleep
+{package [thread](http://www.boost.org/libs/thread/)}.
 
