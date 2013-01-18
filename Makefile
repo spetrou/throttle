@@ -1,35 +1,42 @@
 
-MF=	Makefile
+MF=Makefile
 
-CC=	g++
+CXX=g++
 
 CFLAGS=-I$(HOME)/local_software/include
 LFLAGS=-L$(HOME)/local_software/lib -llog4cpp \
 	   -lboost_date_time -lboost_thread -lboost_system
 PREPROC=
 
-EXE=	prog
-SRC=	main.t.cpp util_fix_throttle.cpp
+EXE=prog
+SRC=main.t.cpp util_fix_throttle.cpp
 
-OBJ=	$(SRC:.cpp=.o)
-
-INC=	util_fix_throttle.h
+OBJS=$(SRC:.cpp=.o)
 
 .SUFFIXES:
 .SUFFIXES:	.cpp .o
 
-all:	$(EXE)
+all: $(EXE)
+
+$(EXE): $(OBJS)
+	$(CXX) $(CFLAGS) -o $@ $(OBJS) $(LFLAGS) 
+
+# pull in dependency info for *existing* .o files
+-include $(OBJS:.o=.d)
 
 .cpp.o:
-	$(CC) $(CFLAGS) $(PREPROC) -c $<
+	$(CXX) -MMD $(CFLAGS) $(PREPROC) -c $<
+	@mv -f $*.d $*.d.tmp
+	@sed -e 's|.*:|$*.o:|' < $*.d.tmp > $*.d
+	@cp -f $*.d $*.d.tmp
+	@sed -e 's/.*://' -e 's/\\$$//' < $*.d.tmp | fmt -1 | \
+	  sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
+	@rm -f $*.d.tmp
 
-$(EXE):	$(OBJ)
-	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LFLAGS) 
-
-$(OBJ):	$(SRC) $(INC) $(MF)
+$(OBJS): $(MF)
 
 clean:
-	rm -f *.o $(EXE) core
+	rm -f *.o *.d $(EXE) core
 
 run:
 	./prog
